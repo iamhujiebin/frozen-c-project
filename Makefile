@@ -2,11 +2,11 @@
 # target : require(optional)
 # 	command
 
-out: main.c my.c
-	gcc main.c my.c -o out
+out: main.c my.c encrypt.c scale.c
+	gcc main.c my.c encrypt.c scale.c -o out
 
 clean:
-	rm -rf out
+	rm -rf out encode.txt decode.txt
 
 run:
 	./out
