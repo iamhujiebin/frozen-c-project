@@ -2,7 +2,7 @@
 # target : require(optional)
 # 	command
 
-out: main.c my.c encrypt.c scale.c
+out: main.c my.c encrypt.c ../src/scale/scale.c
 	gcc main.c my.c encrypt.c scale.c -o out
 
 clean:

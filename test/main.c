@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "my.h"
 #include "encrypt.h"
-#include "scale.h"
+#include "../src/scale/scale.h"
 
 #define MAX(a,b) a>b?a:b
 #define SQ(y) (y)*y
