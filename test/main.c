@@ -1,102 +1,77 @@
 #include <stdio.h>
-#include "my.h"
-#include "encrypt.h"
-#include "../src/scale/scale.h"
+#include <locale.h>
+#include <stdarg.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-#define MAX(a,b) a>b?a:b
+#define MAX(a, b) a>b?a:b
 #define SQ(y) (y)*y
 
-int test(){
-	toBinary(9);
-	toHex(16);
-	toOct(10);
-	encode("main.c","encode.txt",666);
-	decode("encode.txt","decode.txt",666);
-	int n = 100;
-	char c = '@';
-	float money = 93.96;
-	printf("n=%d,c=%c,money=%f\n",n,c,money);
-	int sum2 = sum(1,2);
-	printf("sum=%d\n",sum2);
-	printf("max=%d\n",MAX(11,12));
-	printf("sq=%d\n",SQ(n+1));
-	printf("sq=%d\n",del(1000));
-	printf("sq=%d\n",del2(1000));
-	printf("sq=%d\n",del3(1000));
-	extern int e;
-	e = 998;
-	printf("e=%d\n",e);
-	return 0;
-}
-int e; // 没有这个,上面e=998会报错,因为extern只是声明,没有定义(就是没有分配内存)
+void printLocale();
 
-void printMap(char map[6][7] , int row, int col);
+double add(int num, ...);
 
-int main(int argc, const char * argv[])
-{
-	test();
-    char map[6][7] = {
-        {'#', '#', '#', '#', '#', '#', '#'},
-        {'#', ' ', ' ', ' ', '#' ,' ', ' '},
-        {'#', 'R', ' ', '#', '#', ' ', '#'},
-        {'#', ' ', ' ', ' ', '#', ' ', '#'},
-        {'#', '#', ' ', ' ', ' ', ' ', '#'},
-        {'#', '#', '#', '#', '#', '#', '#'}
-    };
-    int row = sizeof(map)/sizeof(map[0]);
-    int col = sizeof(map[0])/ sizeof(map[0][0]);
-    printMap(map, row, col);
-    int pRow = 2;
-    int pCol = 1;
-    int endRow = 1;
-    int endCol = 6;
-    while ('R' != map[endRow][endCol]) {
-        printf("亲, 请输入相应的操作\n");
-        printf("w(向上走) s(向下走) a(向左走) d(向右走)\n");
-        char run;
-        run = getchar();
-        switch (run) {
-            case 's':
-                if ('#' != map[pRow + 1][pCol]) {
-                    map[pRow][pCol] = ' ';
-                    pRow++;//3
-                    map[pRow][pCol] = 'R';
-                }
-                break;
-            case 'w':
-                if ('#' != map[pRow - 1][pCol]) {
-                    map[pRow][pCol] = ' ';
-                    pRow--;
-                    map[pRow][pCol] = 'R';
-                }
-                break;
-            case 'a':
-                if ('#' != map[pRow][pCol - 1]) {
-                    map[pRow][pCol] = ' ';
-                    pCol--;
-                    map[pRow][pCol] = 'R';
-                }
-                break;
-            case 'd':
-                if ('#' != map[pRow][pCol + 1]) {
-                    map[pRow][pCol] = ' ';
-                    pCol++;
-                    map[pRow][pCol] = 'R';
-                }
-                break;
-        }
-        printMap(map, row, col);
+void sigHandler(int);
+
+int main() {
+    printLocale();
+    int x = 10;
+    double res = 0;
+    res = add(x, 1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.10, 10.11);//x不定，如果x为10，则要读入10个参数
+    printf("last=%f\n", res);
+    signal(SIGINT, sigHandler);
+    while (1) {
+        sleep(1);
     }
-    printf("你太牛X了\n");
-    printf("想挑战自己,请购买完整版本\n");
-    return 0;
 }
-void printMap(char map[6][7] , int row, int col)
-{
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            printf("%c", map[i][j]);
-        }
-        printf("\n");
+
+void sigHandler(int sigNum) {
+    printf("捕获信号:%d\n", sigNum);
+    exit(1);
+}
+
+double add(int num, ...) {
+    double last = 0.0;
+    va_list argp;
+    va_start(argp, num);
+    for (int i = 0; i < num; ++i) {
+        double tmp = va_arg(argp,
+        double);
+        printf("%f\n", tmp);
+        last += tmp;
     }
+    va_end(argp);
+    return last;
+}
+
+void printLocale() {
+
+    setlocale(LC_ALL, "zh_CN");
+    struct lconv *lc;
+    lc = localeconv();
+    printf("decimal_point: %s\n", lc->decimal_point);
+    printf("thousands_sep: %s\n", lc->thousands_sep);
+    printf("grouping: %s\n", lc->grouping);
+    printf("int_curr_symbol: %s\n", lc->int_curr_symbol);
+    printf("currency_symbol: %s\n", lc->currency_symbol);
+    printf("mon_decimal_point: %s\n", lc->mon_decimal_point);
+    printf("mon_thousands_sep: %s\n", lc->mon_thousands_sep);
+    printf("mon_grouping: %s\n", lc->mon_grouping);
+    printf("positive_sign: %s\n", lc->positive_sign);
+    printf("negative_sign: %s\n", lc->negative_sign);
+    printf("frac_digits: %d\n", lc->frac_digits);
+    printf("p_cs_precedes: %d\n", lc->p_cs_precedes);
+    printf("n_cs_precedes: %d\n", lc->n_cs_precedes);
+    printf("p_sep_by_space: %d\n", lc->p_sep_by_space);
+    printf("n_sep_by_space: %d\n", lc->n_sep_by_space);
+    printf("p_sign_posn: %d\n", lc->p_sign_posn);
+    printf("n_sign_posn: %d\n", lc->n_sign_posn);
+    printf("int_frac_digits: %d\n", lc->int_frac_digits);
+    printf("int_p_cs_precedes: %d\n", lc->int_p_cs_precedes);
+    printf("int_n_cs_precedes: %d\n", lc->int_n_cs_precedes);
+    printf("int_p_sep_by_space: %d\n", lc->int_p_sep_by_space);
+    printf("int_n_sep_by_space: %d\n", lc->int_n_sep_by_space);
+    printf("int_p_sign_posn: %d\n", lc->int_p_sign_posn);
+    printf("int_n_sign_posn: %d\n", lc->int_n_sign_posn);
 }
